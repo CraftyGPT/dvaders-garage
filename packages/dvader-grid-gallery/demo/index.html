@@ -14,12 +14,21 @@
   <script type="module">
     import { html, render } from 'lit-html';
     import '../dist/dvader-grid-gallery.js';
+    import warehouses from './data.fixture.js';
 
-    const title = 'Hello owc World!';
+    const cars = [].concat(...warehouses.map(w => w.cars.vehicles));
+    const items = cars.map((car, i) => {
+      return html`<div data-index="${i}">
+        <h3>${car.make} ${car.model} (${car.year_model})</h3>
+        <p>Price $${car.price}</p>
+        <h5>Added ${car.date_added}</h5>
+      </div>`;
+    })
+
     render(
       html`
-        <dvader-grid-gallery .title=${title}>
-          some more light-dom
+        <dvader-grid-gallery current="1" size="12" columns="3">
+          ${items}
         </dvader-grid-gallery>
       `,
       document.querySelector('#demo')

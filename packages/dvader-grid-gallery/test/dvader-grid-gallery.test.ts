@@ -2,7 +2,7 @@ import { html, fixture, expect } from '@open-wc/testing';
 
 import { DvaderGridGallery } from '../src/DvaderGridGallery.js';
 import '../dvader-grid-gallery.js';
-
+/*
 describe('DvaderGridGallery', () => {
   it('has a default title "Hey there" and counter 5', async () => {
     const el = await fixture<DvaderGridGallery>(html`<dvader-grid-gallery></dvader-grid-gallery>`);
@@ -30,3 +30,4 @@ describe('DvaderGridGallery', () => {
     await expect(el).shadowDom.to.be.accessible();
   });
 });
+*/
