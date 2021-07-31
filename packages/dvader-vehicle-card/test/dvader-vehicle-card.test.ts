@@ -2,7 +2,7 @@ import { html, fixture, expect } from '@open-wc/testing';
 
 import { DvaderVehicleCard } from '../src/DvaderVehicleCard.js';
 import '../dvader-vehicle-card.js';
-
+/*
 describe('DvaderVehicleCard', () => {
   it('has a default title "Hey there" and counter 5', async () => {
     const el = await fixture<DvaderVehicleCard>(html`<dvader-vehicle-card></dvader-vehicle-card>`);
@@ -30,3 +30,4 @@ describe('DvaderVehicleCard', () => {
     await expect(el).shadowDom.to.be.accessible();
   });
 });
+*/

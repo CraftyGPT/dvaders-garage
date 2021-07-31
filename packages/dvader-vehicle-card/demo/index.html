@@ -14,13 +14,27 @@
   <script type="module">
     import { html, render } from 'lit-html';
     import '../dist/dvader-vehicle-card.js';
+    import warehouses from './data.fixture.js';
 
-    const title = 'Hello owc World!';
+    const cars = [].concat(...warehouses.map(w => w.cars.vehicles));
+    const vehicles_html = cars.map(vehicle => {
+      return html`<dvader-vehicle-card 
+        itemscope
+        itemtype="https://schema.org/Product"
+        data-id="${vehicle._id}"
+        data-licensed="${vehicle.licensed}">
+          <span itemprop="manufacturer" slot="vehicle-make">${vehicle.make}</span>
+          <span itemprop="model" slot="vehicle-model">${vehicle.model}</span>
+          <span itemprop="releaseDate" slot="vehicle-year-model">${vehicle.year_model}</span>
+          <span itemprop="purchaseDate" slot="vehicle-date-added">${vehicle.date_added}</span>
+          <span itemprop="priceCurrency" content="USD" slot="vehicle-price-currency">$</span>
+          <span itemprop="price" content="${vehicle.price}" slot="vehicle-price">${vehicle.price}</span>
+        </dvader-vehicle-card>`
+    });
+
     render(
       html`
-        <dvader-vehicle-card .title=${title}>
-          some more light-dom
-        </dvader-vehicle-card>
+        ${vehicles_html}
       `,
       document.querySelector('#demo')
     );

@@ -5,22 +5,21 @@ export class DvaderVehicleCard extends LitElement {
     :host {
       display: block;
       padding: 25px;
-      color: var(--dvader-vehicle-card-text-color, #000);
     }
   `;
 
-  @property({ type: String }) title = 'Hey there';
-
-  @property({ type: Number }) counter = 5;
-
-  __increment() {
-    this.counter += 1;
-  }
-
   render() {
     return html`
-      <h2>${this.title} Nr. ${this.counter}!</h2>
-      <button @click=${this.__increment}>increment</button>
+      <h2>
+        <slot name="vehicle-name"></slot>
+        <slot name="vehicle-make"></slot>
+        (<slot name="vehicle-year-model"></slot>)
+      </h2>
+      <h3>Price:
+        <slot name="vehicle-price-currency"></slot>
+        <slot name="vehicle-price"></slot>
+      </h3>
+      <h5>Added: <slot name="vehicle-date-added"></slot></h5>
     `;
   }
 }
