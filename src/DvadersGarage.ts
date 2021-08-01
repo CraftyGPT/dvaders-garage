@@ -89,11 +89,11 @@ export class DvadersGarage extends LitElement {
     // Generate vehicle card markup with microdata
     return vehicles.map((vehicle, i) => {
       return html`<dvader-vehicle-card 
+        licensed="${vehicle.licensed}"
         itemscope
         itemtype="https://schema.org/Product"
         data-index="${i}"
-        data-id="${vehicle._id}"
-        data-licensed="${vehicle.licensed}">
+        data-id="${vehicle._id}">
           <span itemprop="manufacturer" slot="vehicle-make">${vehicle.make}</span>
           <span itemprop="model" slot="vehicle-model">${vehicle.model}</span>
           <span itemprop="releaseDate" slot="vehicle-year-model">${vehicle.year_model}</span>
@@ -129,6 +129,8 @@ export class DvadersGarage extends LitElement {
 
   render() {
     return html`
+      <h1 role="heading" aria-level="1">Anakin Skywalker's garage</h1>
+      <h3 role="heading" aria-level="2">Used cars... and more!</h3>
       <lion-tabs @change="${this.sortingChangeHandler}">
         ${this._generateWarehouseTabs(this.warehouses)}
       </lion-tabs>
