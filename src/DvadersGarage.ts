@@ -1,78 +1,65 @@
-import { LitElement, html, css, property } from 'lit-element';
-import { openWcLogo } from './open-wc-logo.js';
+import { LitElement, html, css, property } from '@lion/core';
+import '@lion/tabs/define';
+import DvaderWarehouse from './models/DvaderWarehouseModel';
+import DvaderVehicle from './models/DvaderVehicleModel';
+import { DvaderVehicleCard } from '../packages/dvader-vehicle-card';
 
 export class DvadersGarage extends LitElement {
-  @property({ type: String }) title = 'My app';
+  @property({ type: String, reflect: true })
+  src = "";
+
+  @property({ type: Array })
+  warehouses:DvaderWarehouse[] = [];
 
   static styles = css`
     :host {
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      font-size: calc(10px + 2vmin);
-      color: #1a2b42;
-      max-width: 960px;
-      margin: 0 auto;
-      text-align: center;
-      background-color: var(--dvaders-garage-background-color);
-    }
-
-    main {
-      flex-grow: 1;
-    }
-
-    .logo > svg {
-      margin-top: 36px;
-      animation: app-logo-spin infinite 20s linear;
-    }
-
-    @keyframes app-logo-spin {
-      from {
-        transform: rotate(0deg);
-      }
-      to {
-        transform: rotate(360deg);
-      }
-    }
-
-    .app-footer {
-      font-size: calc(12px + 0.5vmin);
-      align-items: center;
-    }
-
-    .app-footer a {
-      margin-left: 5px;
     }
   `;
 
+  async firstUpdated() {
+    if (this.src) {
+      const response = await fetch(this.src);
+      this.warehouses = await response.json();
+    }
+  }
+
+  _generateVehicleCards(vehicles:DvaderVehicle[]) {
+    // Generate vehicle card markup with microdata
+    return vehicles.map((vehicle, i) => {
+      return html`<dvader-vehicle-card 
+        itemscope
+        itemtype="https://schema.org/Product"
+        data-index="${i}"
+        data-id="${vehicle._id}"
+        data-licensed="${vehicle.licensed}">
+          <span itemprop="manufacturer" slot="vehicle-make">${vehicle.make}</span>
+          <span itemprop="model" slot="vehicle-model">${vehicle.model}</span>
+          <span itemprop="releaseDate" slot="vehicle-year-model">${vehicle.year_model}</span>
+          <span itemprop="purchaseDate" slot="vehicle-date-added">${vehicle.date_added}</span>
+          <span itemprop="priceCurrency" content="USD" slot="vehicle-price-currency">$</span>
+          <span itemprop="price" content="${vehicle.price}" slot="vehicle-price">${vehicle.price}</span>
+        </dvader-vehicle-card>`
+    })
+  }
+
+  _generateWarehouseTabs(warehouses:DvaderWarehouse[]) {
+    return warehouses.map(warehouse => {
+      return html`
+        <button slot="tab">${warehouse.name}</button>
+        <div slot="panel">
+          <dvader-grid-gallery current="1" size="12" columns="3">
+            ${this._generateVehicleCards(warehouse.cars.vehicles)}
+          </dvader-grid-gallery>
+        </div>
+      `;
+    });
+  }
+
   render() {
     return html`
-      <main>
-        <div class="logo">${openWcLogo}</div>
-        <h1>${this.title}</h1>
-
-        <p>Edit <code>src/DvadersGarage.ts</code> and save to reload.</p>
-        <a
-          class="app-link"
-          href="https://open-wc.org/guides/developing-components/code-examples"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Code examples
-        </a>
-      </main>
-
-      <p class="app-footer">
-        🚽 Made with love by
-        <a
-          target="_blank"
-          rel="noopener noreferrer"
-          href="https://github.com/open-wc"
-          >open-wc</a
-        >.
-      </p>
+      <lion-tabs>
+        ${this._generateWarehouseTabs(this.warehouses)}
+      </lion-tabs>
     `;
   }
 }
