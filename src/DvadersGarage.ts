@@ -1,47 +1,48 @@
-import { LitElement, html, css, property } from '@lion/core';
+import { LitElement, html, css, property, query, customElement } from '@lion/core';
 import '@lion/tabs/define';
 import '@lion/select/define';
-import DvaderWarehouse from './models/DvaderWarehouseModel';
-import DvaderVehicle from './models/DvaderVehicleModel';
+import { parseWarehouseList, DvaderWarehouse } from './models/DvaderWarehouseModel';
+import { sortedListByAttribute, sortedVehiclesByDate, DvaderVehicle } from './models/DvaderVehicleModel';
 
-function parseWarehouseList(warehouses:DvaderWarehouse[]):DvaderWarehouse[] {
-  // FIXME: Restructure
-  return warehouses.map(warehouse => {
+import { OverlayMixin, withModalDialogConfig } from '@lion/overlays';
+
+@customElement("dvader-vehicle-details-overlay")
+class DVaderVehicleDetailsOverlay extends OverlayMixin(LitElement) {
+  opened = false;
+
+  _defineOverlayConfig() {
     return {
-      _id: warehouse._id,
-      name: warehouse.name,
-      location: warehouse.location,
-      cars: {
-        location: warehouse.cars.location,
-        vehicles: warehouse.cars.vehicles.map(vehicle => {
-          return {
-            _id: vehicle._id,
-            make: vehicle.make,
-            model: vehicle.model,
-            year_model: vehicle.year_model,
-            price: vehicle.price,
-            licensed: vehicle.licensed,
-            date_added: new Date(vehicle.date_added)
-          }
-        })
-      }
+      ...withModalDialogConfig(),
     };
-  });
-}
-
-function sortedVehiclesByDate(vehicles:DvaderVehicle[], direction:"asc"|"dsc"): DvaderVehicle[] {
-  if (direction === "asc") {
-    return [...vehicles].sort((a, b) => a.date_added.getTime() - b.date_added.getTime());
-  } else {
-    return [...vehicles].sort((a, b) => b.date_added.getTime() - a.date_added.getTime());
   }
-}
 
-function sortedListByAttribute(vehicles:any[], attribute:string, direction:"asc"|"dsc"): any[] {
-  if (direction === "asc") {
-    return [...vehicles].sort((a, b) => a[attribute] - b[attribute]);
-  } else {
-    return [...vehicles].sort((a, b) => b[attribute] - a[attribute]);
+  __toggle() {
+      this.opened = !this.opened;
+  }
+
+  _setupOpenCloseListeners() {
+    super._setupOpenCloseListeners();
+
+    if (this._overlayInvokerNode) {
+      this._overlayInvokerNode.addEventListener('click', this.__toggle);
+    }
+  }
+
+  _teardownOpenCloseListeners() {
+    super._teardownOpenCloseListeners();
+
+    if (this._overlayInvokerNode) {
+      this._overlayInvokerNode.removeEventListener('click', this.__toggle);
+    }
+  }
+
+  render() {
+    return html`
+      <slot name="invoker"></slot>
+      <div id="overlay-content-node-wrapper">
+        <slot name="content"></slot>
+      </div>
+    `;
   }
 }
 
@@ -52,10 +53,19 @@ export class DvadersGarage extends LitElement {
   @property({ type: Array })
   warehouses:DvaderWarehouse[] = [];
 
+  @property({type: Object})
+  dialog!:DVaderVehicleDetailsOverlay;
+
   static styles = css`
     :host {
     }
   `;
+
+  @query("#dialogOpen")
+  dialogOpen!:HTMLElement;
+
+  @query("#dialogContent")
+  dialogContent!:HTMLElement;
 
   async firstUpdated() {
     if (this.src) {
@@ -85,13 +95,20 @@ export class DvadersGarage extends LitElement {
     }
   }
 
+  handleVehicleCardClick(e:any) {
+    if (e.currentTarget.dataset.licensed, this) {
+      this.dialog = new DVaderVehicleDetailsOverlay;
+    }
+  }
+
   _generateVehicleCards(vehicles:DvaderVehicle[]) {
     // Generate vehicle card markup with microdata
     return vehicles.map((vehicle, i) => {
       return html`<dvader-vehicle-card 
-        licensed="${vehicle.licensed}"
+        @click="${this.handleVehicleCardClick}"
         itemscope
         itemtype="https://schema.org/Product"
+        data-licensed="${vehicle.licensed}"
         data-index="${i}"
         data-id="${vehicle._id}">
           <span itemprop="manufacturer" slot="vehicle-make">${vehicle.make}</span>
@@ -129,6 +146,7 @@ export class DvadersGarage extends LitElement {
 
   render() {
     return html`
+      ${this.dialog ? this.dialog.render() : ""}
       <h1 role="heading" aria-level="1">Anakin Skywalker's garage</h1>
       <h3 role="heading" aria-level="2">Used cars... and more!</h3>
       <lion-tabs @change="${this.sortingChangeHandler}">
