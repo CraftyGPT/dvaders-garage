@@ -19,9 +19,9 @@
     const cars = [].concat(...warehouses.map(w => w.cars.vehicles));
     const vehicles_html = cars.map(vehicle => {
       return html`<dvader-vehicle-card 
-        licensed="${vehicle.licensed}"
         itemscope
         itemtype="https://schema.org/Product"
+        data-licensed="${vehicle.licensed}"
         data-id="${vehicle._id}">
           <span itemprop="manufacturer" slot="vehicle-make">${vehicle.make}</span>
           <span itemprop="model" slot="vehicle-model">${vehicle.model}</span>

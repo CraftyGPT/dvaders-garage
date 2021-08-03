@@ -10,17 +10,17 @@ export class DvaderVehicleCard extends LitElement {
       border-radius: 5px;
     }
 
-    :host([licensed=true]) {
+    :host([data-licensed=true]) {
       cursor: pointer;
       position: relative;
     }
 
-    :host([licensed=false]) {
+    :host([data-licensed=false]) {
       cursor: pointer;
       position: relative;
     }
 
-    :host([licensed=false])::before {
+    :host([data-licensed=false])::before {
       content: "⨯";
       color: red;
       text-shadow: 0 0 1px black;
@@ -29,7 +29,7 @@ export class DvaderVehicleCard extends LitElement {
       left: 1em;
     }
 
-    :host([licensed=true])::before {
+    :host([data-licensed=true])::before {
       content: "★";
       color: gold;
       text-shadow: 0 0 1px black;
@@ -39,16 +39,8 @@ export class DvaderVehicleCard extends LitElement {
     }
   `;
 
-  @property({type: Boolean, reflect: true})
-  licensed!:boolean;
-
-  handleClick(e:Event) {
-    
-  }
-
   render() {
     return html`
-      <div @click="${this.handleClick}">
       <h2>
         <slot name="vehicle-name"></slot>
         <slot name="vehicle-make"></slot>
@@ -59,7 +51,6 @@ export class DvaderVehicleCard extends LitElement {
         <slot name="vehicle-price"></slot>
       </h3>
       <h5>Added: <slot name="vehicle-date-added"></slot></h5>
-      </div>
     `;
   }
 }
