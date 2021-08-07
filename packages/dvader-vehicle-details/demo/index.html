@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <style>
+    body {
+      background: #fafafa;
+    }
+  </style>
+</head>
+<body>
+  <div id="demo"></div>
+
+  <script type="module">
+    import { html, render } from 'lit-html';
+    import '../dist/dvader-vehicle-details.js';
+
+    const vehicle = {
+      "_id": 1,
+      "make": "Volkswagen",
+      "model": "Jetta III",
+      "year_model": 1995,
+      "price": 12947.52,
+      "licensed": true,
+      "date_added": "2018-09-18",
+
+      "warehouse": "Warehouse A",
+      "warehouseLocation": {
+        "lat": "47.13111",
+        "long": "-61.54801"
+      },
+    };
+
+    render(
+      html`<dvader-vehicle-details
+        itemscope
+        itemtype="https://schema.org/Product"
+        title="${vehicle.make} ${vehicle.model} (${vehicle.year_model})"
+        data-licensed="${vehicle.licensed}"
+        data-id="${vehicle._id}">
+          <span itemprop="manufacturer" slot="vehicle-make">${vehicle.make}</span>
+          <span itemprop="model" slot="vehicle-model">${vehicle.model}</span>
+          <span itemprop="releaseDate" slot="vehicle-year-model">${vehicle.year_model}</span>
+          <span itemprop="purchaseDate" slot="vehicle-date-added">${vehicle.date_added}</span>
+          <span itemprop="priceCurrency" content="USD" slot="vehicle-price-currency">$</span>
+          <span itemprop="price" content="${vehicle.price}" slot="vehicle-price">${vehicle.price}</span>
+
+          <div slot="location" itemscope itemtype="https://schema.org/Place">
+            Warehouse: <span itemprop="name">${vehicle.warehouse}</span>
+            <div itemprop="geo" itemscope itemtype="https://schema.org/GeoCoordinates">
+              Lat: ${vehicle.warehouseLocation.lat}, Long: ${vehicle.warehouseLocation.long}
+              <meta itemprop="latitude" content="${vehicle.warehouseLocation.lat}" />
+              <meta itemprop="longitude" content="${vehicle.warehouseLocation.long}" />
+            </div>
+          </div>
+        </dvader-vehicle-details>
+      `,
+      document.querySelector('#demo')
+    );
+  </script>
+</body>
+</html>
