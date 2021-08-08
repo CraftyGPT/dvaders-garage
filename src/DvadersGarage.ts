@@ -72,6 +72,10 @@ export class DvadersGarage extends LitElement {
     }
   }
 
+  vehicleBookingSubmitted(e:any) {
+    console.log("SUBMIT", e.target.dataset.id, e.target.date, e.target.time);
+  }
+
   _updateDetailsDialog() {
     const dialog = this.detailsDialog;
     const ctrl = new OverlayController({
@@ -91,6 +95,7 @@ export class DvadersGarage extends LitElement {
 
   _generateVehicleDetails(vehicle:DvaderVehicle, warehouse:DvaderWarehouse) {
     return html`<dvader-vehicle-details
+        @submitted=${this.vehicleBookingSubmitted}
         id="detailsDialog"
         itemscope
         itemtype="https://schema.org/Product"
@@ -100,7 +105,7 @@ export class DvadersGarage extends LitElement {
           <span itemprop="manufacturer" slot="vehicle-make">${vehicle.make}</span>
           <span itemprop="model" slot="vehicle-model">${vehicle.model}</span>
           <span itemprop="releaseDate" slot="vehicle-year-model">${vehicle.year_model}</span>
-          <span itemprop="purchaseDate" slot="vehicle-date-added">${vehicle.date_added}</span>
+          <span itemprop="purchaseDate" slot="vehicle-date-added">${vehicle.date_added.toLocaleString()}</span>
           <span itemprop="priceCurrency" content="USD" slot="vehicle-price-currency">$</span>
           <span itemprop="price" content="${vehicle.price}" slot="vehicle-price">${vehicle.price}</span>
 

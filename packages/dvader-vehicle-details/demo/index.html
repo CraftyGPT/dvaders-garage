@@ -35,7 +35,7 @@
       html`<dvader-vehicle-details
         itemscope
         itemtype="https://schema.org/Product"
-        title="${vehicle.make} ${vehicle.model} (${vehicle.year_model})"
+        shortname="${vehicle.make} ${vehicle.model} (${vehicle.year_model})"
         data-licensed="${vehicle.licensed}"
         data-id="${vehicle._id}">
           <span itemprop="manufacturer" slot="vehicle-make">${vehicle.make}</span>
