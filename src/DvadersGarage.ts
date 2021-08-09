@@ -72,8 +72,30 @@ export class DvadersGarage extends LitElement {
     }
   }
 
-  vehicleBookingSubmitted(e:any) {
-    console.log("SUBMIT", e.target.dataset.id, e.target.date, e.target.time);
+  async vehicleBookingSubmitted(e:any) {
+    const url = `/api/v1/bookings/vehicle/${e.target.dataset.id}`;
+    const data = {
+      date: e.target.date.toDateString(),
+      time: e.target.time,
+      userid: "JohnDoe"
+    }
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data)
+    });
+    const result = await response.json();
+    if (result && result.status) {
+      if (result.status === 200) {
+        console.log("Successfuly booked");
+      }
+
+      if (result.status === 409) {
+        console.error("Booking aready exists");
+      }
+    }
   }
 
   _updateDetailsDialog() {

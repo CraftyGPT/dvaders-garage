@@ -13,6 +13,7 @@
     "deepmerge": "^4.2.2",
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^7.2.0",
+    "express": "^4.17.1",
     "husky": "^4.3.8",
     "lint-staged": "^10.5.4",
     "prettier": "^2.2.1",
@@ -29,6 +30,7 @@
     "storybook": "tsc && concurrently -k -r \"tsc --watch --preserveWatchOutput\" \"wds -c .storybook/server.mjs\"",
     "storybook:build": "tsc && build-storybook",
     "build": "rimraf dist && tsc && rollup -c rollup.config.js",
+    "server": "npm run build && node server.js",
     "start:build": "npm run build && web-dev-server --root-dir dist --app-index index.html --open --compatibility none",
     "start": "tsc && concurrently -k -r \"tsc --watch --preserveWatchOutput\" \"wds\""
   },
