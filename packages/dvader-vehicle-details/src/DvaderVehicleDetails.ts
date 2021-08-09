@@ -57,6 +57,9 @@ export class DvaderVehicleDetails extends LitElement {
   @property({type: Boolean})
   showDatePicker = true;
 
+  @property({type: Array})
+  bookings!:string[];
+
   @property({type: Boolean})
   get showTimePicker() {
     return !this.showDatePicker;
@@ -69,7 +72,7 @@ export class DvaderVehicleDetails extends LitElement {
   timeListbox!:any;
 
   get isFormValid() {
-    return !!(this.time && this.date);
+    return !!(this.time && this.date && !this.isTimeSlotBooked(this.date, this.time));
   }
 
   onClickClose() {
@@ -106,7 +109,13 @@ export class DvaderVehicleDetails extends LitElement {
   }
 
   submit() {
+    this.bookings.push(`${this.date.toDateString()},${this.time}`)
     this.dispatchEvent(new CustomEvent('submitted'));
+    this.requestUpdate();
+  }
+
+  isTimeSlotBooked(date:Date, time:String) {
+    return this.bookings.indexOf(`${date.toDateString()},${time}`) > -1;
   }
 
   _generateTimeSlots() {
@@ -114,12 +123,17 @@ export class DvaderVehicleDetails extends LitElement {
     const times = Array.from(Array(24*2)).map((a, i) => {
       return `${Math.floor(i / 2).toString().padStart(2, '0')}:${((i % 2) * 30).toString().padEnd(2, '0')}`;
     });
-    const options = times.map(time => html`<lion-option .choiceValue="${time}">${time}</lion-option>`)
+    const options = times.map(time => html`<lion-option ?disabled=${this.isTimeSlotBooked(this.date, time)} .choiceValue="${time}">${time}</lion-option>`);
     return html`<lion-listbox id="time" @model-value-changed=${this.onTimeSelected} name="time" label="Select time">${options}</lion-listbox>`;
   }
 
   _getSubmitButton() {
     return html`<button ?disabled=${!this.isFormValid} @click=${this.submit}>Book</button>`;
+  }
+
+  constructor() {
+    super();
+    this.bookings = [];
   }
 
   render() {

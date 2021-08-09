@@ -24,9 +24,11 @@ export class DvadersGarage extends LitElement {
   warehouses:DvaderWarehouse[] = [];
 
   details!:any;
+  currentBookings!:string[];
 
   @query("#detailsDialog")
-  detailsDialog!:HTMLElement;
+  detailsDialog!:any;
+
 
   async firstUpdated() {
     if (this.src) {
@@ -60,8 +62,14 @@ export class DvadersGarage extends LitElement {
     if (e.currentTarget.dataset.licensed === "true") {
       const result = findVehicleById(this.warehouses, parseInt(e.currentTarget.dataset.id, 10));
       if (result) {
+        this.getVehicleBookings(result.vehicle).then((result) => {
+          this.currentBookings = Object.keys(result);
+          this.requestUpdate();
+        }).catch((error) => {
+          console.error(`Can not retrieve existing bookings for ${result.vehicle._id}. Error ${error}`);
+          this.requestUpdate();
+        });
         this.details = this._generateVehicleDetails(result.vehicle, result.warehouse);
-        this.requestUpdate();
       }
     }
   }
@@ -70,6 +78,12 @@ export class DvadersGarage extends LitElement {
     if (this.detailsDialog) {
       this._updateDetailsDialog();
     }
+  }
+
+  async getVehicleBookings(vehicle:DvaderVehicle) {
+    const url = `/api/v1/bookings/vehicle/${vehicle._id}`;
+    const response = await fetch(url);
+    return await response.json();
   }
 
   async vehicleBookingSubmitted(e:any) {
@@ -105,6 +119,10 @@ export class DvadersGarage extends LitElement {
       invokerNode: this,
       contentNode: dialog,
     });
+
+    if (this.currentBookings) {
+      dialog.bookings = this.currentBookings;
+    }
     ctrl.show();
     ctrl.addEventListener("hide", () => {
       this.details = undefined;
